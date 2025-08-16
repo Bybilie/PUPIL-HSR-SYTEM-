@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+  <!-- Darknet ROS for HSR Camera  -->
+  <arg name="hsr_image" default="/hsrb/head_l_stereo_camera/image_raw" />
+  <arg name="hsr_ros_param_file" default="$(find darknet_ros)/config/hsr.yaml" />
+  <arg name="hsr_network_param_file" default="$(find darknet_ros)/config/yolov3.yaml" />
+  <arg name="weights_path" default="$(find darknet_ros)/yolo_network_config/weights" />
+  <arg name="config_path"  default="$(find darknet_ros)/yolo_network_config/cfg" />
+
+  <node pkg="darknet_ros" type="darknet_ros" name="darknet_ros_hsr" ns="hsr" output="screen">
+    <rosparam command="load" file="$(arg hsr_ros_param_file)" />
+    <rosparam command="load" file="$(arg hsr_network_param_file)" />
+    <param name="weights_path" value="$(arg weights_path)" />
+    <param name="config_path"  value="$(arg config_path)" />
+    <remap from="camera/rgb/image_raw" to="$(arg hsr_image)" />
+  </node>
+
+  <!-- Darknet ROS for Pupil Invisible Camera  -->
+  <arg name="pupil_image" default="/pupil/scene_with_gaze" />
+  <arg name="pupil_ros_param_file" default="$(find darknet_ros)/config/ros.yaml" />
+  <arg name="pupil_network_param_file" default="$(find darknet_ros)/config/yolov3.yaml" />
+
+  <node pkg="darknet_ros" type="darknet_ros" name="darknet_ros_pupil" ns="pupil" output="screen">
+    <rosparam command="load" file="$(arg pupil_ros_param_file)" />
+    <rosparam command="load" file="$(arg pupil_network_param_file)" />
+    <param name="weights_path" value="$(arg weights_path)" />
+    <param name="config_path"  value="$(arg config_path)" />
+    <remap from="camera/rgb/image_raw" to="$(arg pupil_image)" />
+  </node>
+
+</launch>
+
