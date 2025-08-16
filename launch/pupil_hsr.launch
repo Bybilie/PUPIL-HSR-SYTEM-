@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <!-- === YOLO for Pupil Camera -->
+  <arg name="debug" default="true"/>
+  <arg name="yolo_model" default="yolov8n.pt"/>
+  <arg name="conf_thres" default="0.25"/>
+  <arg name="iou_thres" default="0.45"/>
+  <arg name="max_det" default="300"/>
+  <arg name="classes" default=""/>
+  <arg name="tracker" default="bytetrack.yaml"/>
+  <arg name="device" default="0"/>
+  <arg name="result_conf" default="true"/>
+  <arg name="result_line_width" default="1"/>
+  <arg name="result_font_size" default="1"/>
+  <arg name="result_font" default="Arial.ttf"/>
+  <arg name="result_labels" default="true"/>
+  <arg name="result_boxes" default="true"/>
+
+  <!-- Pupil camera -->
+  <arg name="pupil_input_topic" default="/pupil/scene_with_gaze"/>
+  <arg name="pupil_result_topic" default="/yolo_result_pupil"/>
+  <arg name="pupil_result_image_topic" default="/yolo_image_pupil"/>
+
+  <node name="tracker_node_pupil" pkg="ultralytics_ros" type="tracker_node.py" output="screen">
+    <param name="yolo_model" value="$(arg yolo_model)"/>
+    <param name="input_topic" value="$(arg pupil_input_topic)"/>
+    <param name="result_topic" value="$(arg pupil_result_topic)"/>
+    <param name="result_image_topic" value="$(arg pupil_result_image_topic)"/>
+    <param name="conf_thres" value="$(arg conf_thres)"/>
+    <param name="iou_thres" value="$(arg iou_thres)"/>
+    <param name="max_det" value="$(arg max_det)"/>
+    <param name="tracker" value="$(arg tracker)"/>
+    <param name="result_conf" value="$(arg result_conf)"/>
+    <param name="result_line_width" value="$(arg result_line_width)"/>
+    <param name="result_font_size" value="$(arg result_font_size)"/>
+    <param name="result_font" value="$(arg result_font)"/>
+    <param name="result_labels" value="$(arg result_labels)"/>
+    <param name="result_boxes" value="$(arg result_boxes)"/>
+    <rosparam param="classes" subst_value="true">$(arg classes)</rosparam>
+    <rosparam param="device" subst_value="true">$(arg device)</rosparam>
+  </node>
+
+  <node if="$(arg debug)" name="image_view_pupil" pkg="image_view" type="image_view" output="screen">
+    <remap from="image" to="$(arg pupil_result_image_topic)"/>
+  </node>
+
+  <!-- YOLO for HSR  -->
+  <arg name="hsr_input_topic" default="/hsrb/head_l_stereo_camera/image_raw"/>
+  <arg name="hsr_result_topic" default="/yolo_result_hsr"/>
+  <arg name="hsr_result_image_topic" default="/yolo_image_hsr"/>
+
+  <node name="tracker_node_hsr" pkg="ultralytics_ros" type="tracker_node.py" output="screen">
+    <param name="yolo_model" value="$(arg yolo_model)"/>
+    <param name="input_topic" value="$(arg hsr_input_topic)"/>
+    <param name="result_topic" value="$(arg hsr_result_topic)"/>
+    <param name="result_image_topic" value="$(arg hsr_result_image_topic)"/>
+    <param name="conf_thres" value="$(arg conf_thres)"/>
+    <param name="iou_thres" value="$(arg iou_thres)"/>
+    <param name="max_det" value="$(arg max_det)"/>
+    <param name="tracker" value="$(arg tracker)"/>
+    <param name="result_conf" value="$(arg result_conf)"/>
+    <param name="result_line_width" value="$(arg result_line_width)"/>
+    <param name="result_font_size" value="$(arg result_font_size)"/>
+    <param name="result_font" value="$(arg result_font)"/>
+    <param name="result_labels" value="$(arg result_labels)"/>
+    <param name="result_boxes" value="$(arg result_boxes)"/>
+    <rosparam param="classes" subst_value="true">$(arg classes)</rosparam>
+    <rosparam param="device" subst_value="true">$(arg device)</rosparam>
+  </node>
+
+  <node if="$(arg debug)" name="image_view_hsr" pkg="image_view" type="image_view" output="screen">
+    <remap from="image" to="$(arg hsr_result_image_topic)"/>
+  </node>
+</launch>
+
